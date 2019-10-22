@@ -119,7 +119,7 @@ class {:autocontracts} NatSet
     // Garante que o "t" que retorne seja do tamanho do conjunto Set
     // pois o array pode ter um tamanho alocado maior
     method Size() returns (t:nat)
-    requires size != 0
+    requires size >= 0
     ensures t == |Set|
     {
         return size;
@@ -135,8 +135,8 @@ class {:autocontracts} NatSet
     method Union(inputSet: NatSet) returns (newSet: NatSet)
     // Precisa garantir que todos os valores inseridos no newSet, tanto de
     // inputSet como do conjunto atual estejam contidos no newSet
-    requires |Set| != 0
-    requires |inputSet.Set| != 0
+    requires |Set| >= 0
+    requires |inputSet.Set| >= 0
     ensures |newSet.Set| >= 0
     ensures forall i :: (0 <= i< |Set|) ==> Set[i] in newSet.Set
     ensures forall i :: (0 <= i< |inputSet.Set|) ==> inputSet.Set[i] in newSet.Set
@@ -224,8 +224,11 @@ class {:autocontracts} NatSet
     // sempre o novo elemento inserido no conjunto 3, OU vai estar apenas no conjunto 1
     // OU apenas no conjunto 2
     requires |Set| >= 0
+    
     requires |inputSet.Set| >= 0
+    
     ensures |newSet.Set| >= 0
+    
     ensures forall i :: (0 <= i < |newSet.Set|) ==> ((newSet.Set[i] in Set) && !(newSet.Set[i] in inputSet.Set))
                     || (newSet.Set[i] in inputSet.Set && !(newSet.Set[i] in Set))
     {
@@ -299,13 +302,13 @@ method Main()
 
     // Operacoes de conjuntos
     var unionSet := newSet.Union(newSet2);
-    assert unionSet.Size() == 8;
+    assert unionSet.size == 8;
 
     var interSet := newSet.Intersection(newSet2);
-    assert unionSet.Size() == 2;
+    assert interSet.size == 2;
 
     var diffSet := newSet.Difference(newSet2);
-    assert unionSet.Size() == 7;
+    assert diffSet.size == 7;
 
     // O codigo constantemente apresentou warnings como que uma pos condicoes pode
     // nao garantir, mas isto esta devidamente documentado no Dafny que ele
